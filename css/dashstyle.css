@@ -1,0 +1,48 @@
+/* css/student-dashboard.css */
+
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#map {
+    position: fixed; /* Full screen map */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0; /* Ensure map is under other elements */
+}
+
+.title-bar {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 25px;
+    z-index: 1002;
+    font-size: 1.10rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.driver-label {
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    z-index: 1001;
+    margin-top: 5px; /* Space from the top */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Center the div on the x-axis */
+    font-size: 0.9rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Add styles for other elements as needed */

@@ -1,0 +1,176 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 0;
+    margin: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+}
+
+.logo img {
+    max-width: 100%;
+    height: auto;
+}
+
+
+.login-container {
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    transition: background-color 0.3s;
+    margin-bottom: 100px;
+}
+
+.login-container h2, .login-container h3 {
+    color: #333;
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    background-color: #5cb85c;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #4cae4c;
+}
+
+input[type=text],
+input[type=password] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.dark-mode-toggle {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    z-index: 1000;
+}
+
+.label {
+    display: inline-block;
+    height: 34px;
+    position: relative;
+    width: 60px;
+    background-color: #111;
+    border-radius: 34px;
+    transition: background-color 0.3s;
+}
+
+.label .ball {
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 30px;
+    height: 30px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.checkbox:checked + .label .ball {
+    transform: translateX(26px);
+}
+
+body.dark-mode {
+    background-color: #000; 
+    color: #fff; 
+}
+
+body.dark-mode .login-container {
+    background-color: #333; 
+    color: #fff;
+}
+
+body.dark-mode .login-container h2,
+body.dark-mode .login-container h3 {
+    color: #fff;
+}
+
+body.dark-mode button {
+    background-color: #4CAF50; 
+    color: #fff; 
+}
+
+body.dark-mode input[type="text"],
+body.dark-mode input[type="password"] {
+    background-color: #555; 
+    color: #fff; 
+    border: 1px solid #6c757d; 
+}
+
+body.dark-mode .label {
+    background-color: #555; 
+}
+
+body.dark-mode .label .ball {
+    background-color: #fff; 
+}
+
+body.dark-mode .logo img {
+    filter: invert(100%); 
+}
+/* Dark Mode Toggle */
+.dark-mode-toggle {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    z-index: 1000;
+}
+
+/* Label for the toggle */
+.label {
+    display: inline-block;
+    height: 34px;
+    width: 60px;
+    background-color: #111;
+    border-radius: 34px;
+    transition: background-color 0.3s;
+    overflow: hidden;
+}
+
+/* Ball inside the toggle */
+.label .ball {
+    background-color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 30px;
+    height: 30px;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Checked state of the toggle */
+.checkbox:checked + .label .ball {
+    transform: translateX(26px);
+}
+
+/* Dark mode styles */
+body.dark-mode .dark-mode-toggle .label {
+    background-color: #5cb85c; /* Change the background color to green for dark mode */
+}
+
+.checkbox {
+    display: none;
+}

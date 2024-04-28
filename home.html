@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - VIT Shuttle Tracker</title>
+    <link rel="stylesheet" href="css/homestyle.css">
+</head>
+<body>
+    <div class="logo">
+        <img src="shuttleitlogo.png" alt="ShuttleIT Logo">
+    </div>
+    
+    <div id="menu">
+        <button onclick="location.href='student-dashboard.html';">Track Shuttle</button>
+        <div id="eta">
+            <p>Estimated Time of Arrival (ETA): <span id="eta-time">Calculating...</span></p>
+        </div>
+    </div>
+
+    <div class="dark-mode-toggle">
+        <input type="checkbox" id="darkModeCheckbox" class="checkbox">
+        <label for="darkModeCheckbox" class="label">
+            <span class="ball"></span>
+        </label>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCe23F3CFtz-lbBFxXdjfv-z5oE9PhlyzE",
+            authDomain: "shuttle-web-538fa.firebaseapp.com",
+            databaseURL: "https://shuttle-web-538fa-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "shuttle-web-538fa",
+            storageBucket: "shuttle-web-538fa.appspot.com",
+            messagingSenderId: "189496484474",
+            appId: "1:189496484474:web:d8929149d890cf573ad1c3",
+            measurementId: "G-M20NXLPBD3"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Check for Firebase authentication
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in
+                console.log('User is signed in:', user);
+            } else {
+                // No user is signed in, redirect to login page
+                location.href = 'login.html';
+            }
+        });
+    </script>
+    <script src="eta.js"></script>
+    <script>
+        // JavaScript for the dark mode toggle
+        document.getElementById('darkModeCheckbox').addEventListener('change', function() {
+            document.body.classList.toggle('dark-mode');
+            // Optionally save the dark mode preference in localStorage
+        });
+    </script>
+</body>
+</html>

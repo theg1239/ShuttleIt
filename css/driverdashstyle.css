@@ -1,0 +1,99 @@
+/* Base styles for the dashboard */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #121212; /* Dark mode background color */
+    color: white; /* Text color for dark mode */
+    font-family: Arial, sans-serif;
+    overflow: hidden; /* Prevent scrollbars from appearing */
+}
+
+/* Fullscreen map styles */
+#map {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 0; /* Keep the map behind other elements */
+}
+
+/* Style for the button that shares location */
+.share-location {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px; /* Diameter of the button */
+    height: 80px; /* Make sure width and height are equal for a circle */
+    background-color: #242424; /* Dark color for the button background */
+    border: none;
+    border-radius: 50%; /* Fully rounded corners for a circular shape */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+    cursor: pointer;
+    z-index: 1000; /* Ensure button is above the map */
+}
+
+/* Style for the icon inside the location sharing button */
+.location-icon {
+    width: 60%; /* Width relative to the button */
+    height: auto; /* Maintain aspect ratio */
+}
+
+/* Add an active state to the button for when location sharing is active */
+.share-location.active {
+    background-color: #4CAF50; /* Change background to green when active */
+}
+
+/* Style for the status message indicating the last location update */
+.update-status {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333; /* Dark background for the status bar */
+    color: #fff; /* White text for readability */
+    padding: 8px 16px;
+    border-radius: 20px; /* Rounded corners for the status bar */
+    z-index: 1000; /* Ensure status bar is above the map */
+    font-size: 0.9rem; /* Smaller text size for the status message */
+}
+
+/* Ensure the text is visible and legible */
+.update-status span {
+    font-weight: bold; /* Make the time bold for emphasis */
+}
+.inverted {
+    filter: invert(100%);
+}
+.driver-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #333; 
+    color: #fff; 
+    text-align: center;
+    padding: 10px 0;
+    font-size: 1.5rem; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); 
+    z-index: 1001; 
+}
+.driver-identity {
+    position: absolute;
+    top: 75px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333; /* Dark background for the status bar */
+    color: #fff; /* White text for readability */
+    padding: 8px 16px;
+    border-radius: 20px; /* Rounded corners for the status bar */
+    z-index: 1000; /* Ensure status bar is above the map */
+    font-size: 0.9rem; /* Smaller text size for the status message */
+}
+
+}
