@@ -16,15 +16,16 @@
     <!-- Button to share location -->
     <button id="shareLocationBtn" class="share-location">
         <img src="share-location-icon.png" alt="Share Location" class="location-icon">
-    </button>
-    <button id="logoutButton" class="logout-button">Log Out</button>
+    </button
+    <button class="logout-button">Log Out</button>
     <!-- Last location update status -->
     <div id="lastUpdateStatus" class="update-status">
         Last location update: <span id="lastUpdateTime">0</span>s
     </div>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script 
+src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <!-- Your JavaScript file -->

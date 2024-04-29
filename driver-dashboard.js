@@ -1,8 +1,7 @@
 let isSharingLocation = false;
 let shareLocationInterval;
-let lastLocationUpdateTimestamp = null; // Store the last location update timestamp
+let lastLocationUpdateTimestamp = null;
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyCe23F3CFtz-lbBFxXdjfv-z5oE9PhlyzE",
     authDomain: "shuttle-web-538fa.firebaseapp.com",
@@ -14,63 +13,64 @@ const firebaseConfig = {
     measurementId: "G-M20NXLPBD3"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Reference to your Firebase database location for the driver's location
 const locationRef = firebase.database().ref('driverLocation');
 
-// Function to update the driver's location in Firebase
 function updateDriverLocation() {
-  const driverId = firebase.auth().currentUser.uid;
-  const locationRef = firebase.database().ref(`driverLocations/${driverId}`);
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-            const { latitude, longitude } = position.coords;
-            const locationUpdate = {
-                latitude: latitude,
-                longitude: longitude,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            };
-            locationRef.set(locationUpdate);
-            console.log('Location updated:', locationUpdate);
-            // Update the last location update timestamp whenever location is updated
-            lastLocationUpdateTimestamp = Date.now();
-        }, (error) => {
-            console.error('Error getting location:', error);
-        });
+    const user = firebase.auth().currentUser;
+    if (user) {
+        const driverId = user.uid;
+        const locationRef = firebase.database().ref(`driverLocations/${driverId}`);
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const { latitude, longitude } = position.coords;
+                const locationUpdate = {
+                    latitude: latitude,
+                    longitude: longitude,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                };
+                locationRef.set(locationUpdate);
+                console.log('Location updated:', locationUpdate);
+                lastLocationUpdateTimestamp = Date.now();
+            }, (error) => {
+                console.error('Error getting location:', error);
+            });
+        } else {
+            console.error("Geolocation is not supported by this browser.");
+        }
     } else {
-        console.error("Geolocation is not supported by this browser.");
+        console.error("User is not authenticated. Can't update location.");
     }
 }
 
-// Function to start sharing the driver's location
 function startSharingLocation() {
-    if (!isSharingLocation) {
+    const user = firebase.auth().currentUser;
+    if (user && !isSharingLocation) {
         isSharingLocation = true;
-        updateDriverLocation(); // Immediately get and send location
-        shareLocationInterval = setInterval(updateDriverLocation, 5000); // Then continue every 5 seconds
+        updateDriverLocation();
+        shareLocationInterval = setInterval(updateDriverLocation, 1000);
         console.log('Location sharing started.');
-        document.getElementById('shareLocationBtn').style.backgroundColor = '#4CAF50'; // Change to green
+        document.getElementById('shareLocationBtn').style.backgroundColor = '#4CAF50';
+    } else if (!user) {
+        console.error("User is not authenticated. Can't start location sharing.");
     }
 }
 
-// Function to stop sharing the driver's location
+
 function stopSharingLocation() {
     if (isSharingLocation) {
         isSharingLocation = false;
-        clearInterval(shareLocationInterval); // Stop the interval
+        clearInterval(shareLocationInterval);
         console.log('Location sharing stopped.');
-        document.getElementById('shareLocationBtn').style.backgroundColor = ''; // Revert to default
+        document.getElementById('shareLocationBtn').style.backgroundColor = '';
     }
 }
 
-// Toggle the location sharing state
 function toggleLocationSharing() {
     isSharingLocation ? stopSharingLocation() : startSharingLocation();
 }
 
-// Function to update the last location update time display
 function updateLastLocationTime() {
     if (lastLocationUpdateTimestamp) {
         const now = Date.now();
@@ -80,15 +80,11 @@ function updateLastLocationTime() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Retrieve the driver's username from localStorage
     var driverUsername = localStorage.getItem('driverUsername');
-    
-    // Set the driver's username in the dashboard
     if(driverUsername) {
         document.getElementById('driverName').textContent = `Logged in as ${driverUsername}`;
     }
 
-    // Initialize the driver dashboard
     initDriverDashboard();
 });
 
@@ -99,14 +95,11 @@ function initDriverDashboard() {
     locationRef.on('value', (snapshot) => {
         const locationData = snapshot.val();
         if (locationData && locationData.timestamp) {
-            // Update the last location timestamp
             lastLocationUpdateTimestamp = locationData.timestamp;
-            // Immediately update the display
             updateLastLocationTime();
         }
     });
 
-    // Update the last location time every second
     setInterval(updateLastLocationTime, 1000);
 }
 const driverName = localStorage.getItem('driverUsername');
@@ -114,6 +107,36 @@ const driverName = localStorage.getItem('driverUsername');
 if (driverName) {
   const driverNameSpan = document.getElementById('driverName');
   if (driverNameSpan) {
-    driverNameSpan.textContent = driverName; // Set the driver's name
+    driverNameSpan.textContent = driverName;
   }
 }
+function logoutDriver() {
+    const auth = firebase.auth();
+    const currentDriverId = auth.currentUser.uid; 
+    const locationRef = firebase.database().ref(`driverLocations/${currentDriverId}`);
+
+    locationRef.remove() 
+    .then(() => {
+        console.log('Driver location removed.');
+
+        auth.signOut().then(() => {
+            console.log('Driver logged out.');
+
+            window.location.href = 'index.html';
+        }).catch((error) => {
+            console.error('Error logging out:', error);
+        });
+    })
+    .catch((error) => {
+        console.error('Error removing driver location:', error);
+    });
+}
+document.addEventListener('DOMContentLoaded', function() {
+    var logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', logoutDriver);
+    } else {
+        console.error('Logout button not found!');
+    }
+});
+

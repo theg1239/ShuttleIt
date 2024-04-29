@@ -17,22 +17,21 @@ body, html {
 /* Title bar at the top of the map */
 .title-bar {
     position: absolute;
-    top: 20px;
+    top: 45px;
     left: 50%;
     transform: translateX(-50%);
     background-color: #333;
     color: #fff;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 8px 16px;
+    border-radius: 20px;
     z-index: 1000;
-    font-size: 1.10rem;
+    font-size: 0.9rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 /* Styles for the markers and popups */
 .leaflet-marker-icon {
     border-radius: 50%;
-    border: 2px solid #fff;
 }
 
 .leaflet-popup-content-wrapper {

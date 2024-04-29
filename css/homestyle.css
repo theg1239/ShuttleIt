@@ -1,3 +1,4 @@
+
 /* css/homestyle.css */
 
 body {
@@ -17,6 +18,7 @@ body {
 .logo img {
     max-width: 300px;
     height: auto;
+    margin-bottom: 100px;
 }
 
 #menu {
@@ -90,4 +92,3 @@ body.dark-mode .logo img {
 .checkbox {
     display: none;
 }
-

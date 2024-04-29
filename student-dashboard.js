@@ -1,8 +1,6 @@
-// Import the necessary functions from the Firebase SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyCe23F3CFtz-lbBFxXdjfv-z5oE9PhlyzE",
     authDomain: "shuttle-web-538fa.firebaseapp.com",
@@ -14,15 +12,19 @@ const firebaseConfig = {
     measurementId: "G-M20NXLPBD3"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// Define the map and markers globally
 let map;
 let markers = {};
 
-// Function to fetch and listen for driver locations from Firebase
+var shuttleIcon = L.icon({
+    iconUrl: '/assets/shuttle-icon.png', 
+    iconSize: [38, 38],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16]
+});
+
 function fetchDriverLocations() {
     console.log('Fetching driver locations...');
     const locationRef = ref(database, 'driverLocations');
@@ -39,38 +41,33 @@ function fetchDriverLocations() {
             console.log(`Updating location for driver: ${driverId}`);
             if (location && location.latitude && location.longitude) {
                 updateMap(driverId, location.latitude, location.longitude);
-            }   else {
+            } else {
                 console.error(`Invalid or no location data available for ${driverId}.`);
             }
         });
     });
 }
 
-// Function to update the map with the new location
 function updateMap(driverId, latitude, longitude) {
     console.log(`Updating map for driver: ${driverId}, Lat: ${latitude}, Lng: ${longitude}`);
     if (markers[driverId]) {
         markers[driverId].setLatLng([latitude, longitude]);
         console.log(`Moved marker for driver: ${driverId}`);
     } else {
-        markers[driverId] = L.marker([latitude, longitude], { title: driverId }).addTo(map);
+        markers[driverId] = L.marker([latitude, longitude], { icon: shuttleIcon, title: driverId }).addTo(map);
         console.log(`Created marker for driver: ${driverId}`);
     }
-    map.panTo([latitude, longitude]);
 }
 
-// Initialize the map and add tile layer
 function initMap() {
-    map = L.map('map').setView([12.973977, 79.163368], 16); // Coordinates for VIT Vellore
+    map = L.map('map').setView([12.973977, 79.163368], 16);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Fetch driver locations
     fetchDriverLocations();
 }
 
-// Listen for the DOM content loaded event and initialize the map
 document.addEventListener('DOMContentLoaded', () => {
     initMap();
 });

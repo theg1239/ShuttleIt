@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 
-// Firebase configuration
 const firebaseConfig = {
 	apiKey: "AIzaSyCe23F3CFtz-lbBFxXdjfv-z5oE9PhlyzE",
         authDomain: "shuttle-web-538fa.firebaseapp.com",
@@ -22,7 +21,6 @@ const firebaseConfig = {
         'hd': 'vitstudent.ac.in' 
     });
 
-    // Google Login button event listener
     document.getElementById('googleLogin').addEventListener('click', () => {
         signInWithPopup(auth, provider).then((result) => {
             const user = result.user;
@@ -32,7 +30,6 @@ const firebaseConfig = {
         });
     });
 
-    // Driver Login form event listener
 document.getElementById('driverLoginForm').addEventListener('submit', (event) => {
   event.preventDefault();
 
@@ -65,16 +62,12 @@ document.getElementById('driverLoginForm').addEventListener('submit', (event) =>
     console.error('Login request failed:', error);
   });
 });
-    // Dark Mode Toggle
     var checkbox = document.getElementById('darkModeCheckbox');
     if (checkbox) {
         checkbox.addEventListener('change', function(event) {
             document.body.classList.toggle('dark-mode', checkbox.checked);
-            // Save dark mode preference in local storage
             localStorage.setItem('darkMode', checkbox.checked);
         });
-
-        // Initialize dark mode from local storage
         var darkMode = localStorage.getItem('darkMode') === 'true';
         document.body.classList.toggle('dark-mode', darkMode);
         checkbox.checked = darkMode;
