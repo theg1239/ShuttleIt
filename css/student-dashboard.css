@@ -1,0 +1,55 @@
+/* css/student-dashboard.css */
+
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: #f8f9fa;
+}
+
+/* Full screen map */
+#map {
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Title bar at the top of the map */
+.title-bar {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 1000;
+    font-size: 1.10rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Styles for the markers and popups */
+.leaflet-marker-icon {
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 8px;
+}
+
+.leaflet-popup-content {
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* Responsive adjustments can be placed below, if needed */
+@media (max-width: 768px) {
+    .title-bar {
+        width: calc(100% - 40px); /* Full width with padding on smaller screens */
+        padding: 10px;
+        font-size: 1rem;
+    }
+}
+

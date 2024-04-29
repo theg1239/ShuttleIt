@@ -1,50 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shuttle Tracker</title>
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-   
-    <link rel="stylesheet" href="/css/dashstyle.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shuttle Tracking</title>
+<!-- Leaflet CSS for map rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css">
+<!-- Custom CSS -->
+<link rel="stylesheet" href="css/student-dashboard.css">
 </head>
 <body>
-    <div class="header">
-        <h1>Shuttle Tracker</h1>
-    </div>
 
-    <div id="map" style="width: 100%; height: 100%;"></div> <!-- Map container -->
+<div id="map" style="width: 100%; height: 100%;"></div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
-   
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
-
-
-    <script>
-
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
-  	import { getDatabase } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
-	
-        const firebaseConfig = {
-    	  apiKey: "AIzaSyCe23F3CFtz-lbBFxXdjfv-z5oE9PhlyzE",
-          authDomain: "shuttle-web-538fa.firebaseapp.com",
-          databaseURL: "https://shuttle-web-538fa-default-rtdb.asia-southeast1.firebasedatabase.app",
-          projectId: "shuttle-web-538fa",
-          storageBucket: "shuttle-web-538fa.appspot.com",
-          messagingSenderId: "189496484474",
-          appId: "1:189496484474:web:d8929149d890cf573ad1c3",
-          measurementId: "G-M20NXLPBD3"
-        };
-	const app = initializeApp(firebaseConfig);
-  	const auth = getAuth(app);
-  	const database = getDatabase(app);
-    </script>
-
-<script src="./student-dashboard.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script type="module" src="./student-dashboard.js"></script>
 </body>
 </html>
