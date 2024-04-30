@@ -1,7 +1,4 @@
-let isSharingLocation = false;
-let shareLocationInterval;
-let lastLocationUpdateTimestamp = null;
-
+// Firebase configuration and initialization
 const firebaseConfig = {
     apiKey: "AIzaSyCe23F3CFtz-lbBFxXdjfv-z5oE9PhlyzE",
     authDomain: "shuttle-web-538fa.firebaseapp.com",
@@ -12,28 +9,30 @@ const firebaseConfig = {
     appId: "1:189496484474:web:d8929149d890cf573ad1c3",
     measurementId: "G-M20NXLPBD3"
 };
-
 firebase.initializeApp(firebaseConfig);
 
-const locationRef = firebase.database().ref('driverLocation');
+// Global variables for tracking state
+let isSharingLocation = false;
+let shareLocationInterval;
+let lastLocationUpdateTimestamp = null;
 
+// Function definitions
 function updateDriverLocation() {
     const user = firebase.auth().currentUser;
     if (user) {
         const driverId = user.uid;
         const locationRef = firebase.database().ref(`driverLocations/${driverId}`);
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const { latitude, longitude } = position.coords;
+            navigator.geolocation.getCurrentPosition(position => {
                 const locationUpdate = {
-                    latitude: latitude,
-                    longitude: longitude,
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 };
                 locationRef.set(locationUpdate);
                 console.log('Location updated:', locationUpdate);
                 lastLocationUpdateTimestamp = Date.now();
-            }, (error) => {
+            }, error => {
                 console.error('Error getting location:', error);
             });
         } else {
@@ -43,32 +42,40 @@ function updateDriverLocation() {
         console.error("User is not authenticated. Can't update location.");
     }
 }
+const driverName = localStorage.getItem('driverUsername');
 
+if (driverName) {
+    const driverNameSpan = document.getElementById('driverName');
+    if (driverNameSpan) {
+        driverNameSpan.textContent = driverName;
+    }
+}
 function startSharingLocation() {
-    const user = firebase.auth().currentUser;
-    if (user && !isSharingLocation) {
+    if (!isSharingLocation) {
         isSharingLocation = true;
         updateDriverLocation();
         shareLocationInterval = setInterval(updateDriverLocation, 1000);
         console.log('Location sharing started.');
         document.getElementById('shareLocationBtn').style.backgroundColor = '#4CAF50';
-    } else if (!user) {
-        console.error("User is not authenticated. Can't start location sharing.");
     }
 }
 
-
 function stopSharingLocation() {
     if (isSharingLocation) {
-        isSharingLocation = false;
         clearInterval(shareLocationInterval);
+        isSharingLocation = false;
         console.log('Location sharing stopped.');
         document.getElementById('shareLocationBtn').style.backgroundColor = '';
     }
 }
 
 function toggleLocationSharing() {
-    isSharingLocation ? stopSharingLocation() : startSharingLocation();
+    const user = firebase.auth().currentUser;
+    if (user) {
+        isSharingLocation ? stopSharingLocation() : startSharingLocation();
+    } else {
+        console.error("User is not authenticated. Can't toggle location sharing.");
+    }
 }
 
 function updateLastLocationTime() {
@@ -79,64 +86,36 @@ function updateLastLocationTime() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    var driverUsername = localStorage.getItem('driverUsername');
-    if(driverUsername) {
-        document.getElementById('driverName').textContent = `Logged in as ${driverUsername}`;
-    }
-
-    initDriverDashboard();
-});
-
-function initDriverDashboard() {
-    const shareLocationBtn = document.getElementById('shareLocationBtn');
-    shareLocationBtn.addEventListener('click', toggleLocationSharing);
-
-    locationRef.on('value', (snapshot) => {
-        const locationData = snapshot.val();
-        if (locationData && locationData.timestamp) {
-            lastLocationUpdateTimestamp = locationData.timestamp;
-            updateLastLocationTime();
-        }
-    });
-
-    setInterval(updateLastLocationTime, 1000);
-}
-const driverName = localStorage.getItem('driverUsername');
-
-if (driverName) {
-  const driverNameSpan = document.getElementById('driverName');
-  if (driverNameSpan) {
-    driverNameSpan.textContent = driverName;
-  }
-}
 function logoutDriver() {
     const auth = firebase.auth();
-    const currentDriverId = auth.currentUser.uid; 
+    const currentDriverId = auth.currentUser.uid;
     const locationRef = firebase.database().ref(`driverLocations/${currentDriverId}`);
 
-    locationRef.remove() 
-    .then(() => {
+    locationRef.remove().then(() => {
         console.log('Driver location removed.');
-
         auth.signOut().then(() => {
             console.log('Driver logged out.');
-
             window.location.href = 'index.html';
-        }).catch((error) => {
+        }).catch(error => {
             console.error('Error logging out:', error);
         });
-    })
-    .catch((error) => {
+    }).catch(error => {
         console.error('Error removing driver location:', error);
     });
 }
-document.addEventListener('DOMContentLoaded', function() {
-    var logoutButton = document.getElementById('logoutButton');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', logoutDriver);
-    } else {
-        console.error('Logout button not found!');
-    }
-});
 
+// Event listeners for DOM content loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the auth state is monitored before enabling functionality
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            const shareLocationBtn = document.getElementById('shareLocationBtn');
+            shareLocationBtn.addEventListener('click', toggleLocationSharing);
+            const logoutButton = document.getElementById('logoutButton');
+            logoutButton.addEventListener('click', logoutDriver);
+            setInterval(updateLastLocationTime, 1000);
+        } else {
+            console.log("No user is logged in. Please log in.");
+        }
+    });
+});
