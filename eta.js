@@ -1,5 +1,5 @@
 let studentLocation = null;
-let driverLocations = {};
+const updateInterval = 30000; // Interval in milliseconds to update the ETA (e.g., every 30 seconds)
 
 function promptForStudentLocation() {
     if (navigator.geolocation) {
@@ -8,7 +8,9 @@ function promptForStudentLocation() {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude
             };
-            fetchDriverLocationsAndCalculateETAs();
+            // Start the periodic update once location is obtained
+            fetchShuttleLocationsAndCalculateETA();
+            setInterval(fetchShuttleLocationsAndCalculateETA, updateInterval);
         }, error => {
             console.error("Error obtaining student location: ", error);
         });
@@ -17,87 +19,57 @@ function promptForStudentLocation() {
     }
 }
 
-function fetchDriverLocationsAndCalculateETAs() {
-    const locationRef = firebase.database().ref('driverLocations');
-    locationRef.on('value', snapshot => {
-        driverLocations = snapshot.val() || {};
-        calculateAndUpdateETAs();
-    });
+function fetchShuttleLocationsAndCalculateETA() {
+    fetch('/api/active-shuttles')
+        .then(response => response.json())
+        .then(shuttles => {
+            const closestShuttle = findClosestShuttle(shuttles);
+            if (closestShuttle) {
+                const distance = haversineDistance(studentLocation, closestShuttle);
+                const eta = calculateETA(distance);
+                updateETAUI(eta);
+            } else {
+                updateETAUI("No shuttles available");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching shuttles:", error);
+            updateETAUI("Failed to fetch shuttles");
+        });
 }
 
-function calculateAndUpdateETAs() {
-    const currentTime = Date.now();
-    const etas = Object.entries(driverLocations).reduce((acc, [driverId, driverLocation]) => {
-        if (driverLocation && driverLocation.timestamp && (currentTime - driverLocation.timestamp) <= 300000) { 
-            const distance = haversineDistance(studentLocation, driverLocation);
-            const eta = distance / calculateSpeed(driverLocation); 
-            acc[driverId] = isFinite(eta) ? eta.toFixed(2) : "Not available";
-        } else {
-            acc[driverId] = "Not available";
-        }
-        return acc;
-    }, {});
-
-    updateETAUI(etas);
+function findClosestShuttle(shuttles) {
+    return shuttles.reduce((closest, shuttle) => {
+        const shuttleDistance = haversineDistance(studentLocation, shuttle);
+        return !closest || shuttleDistance < closest.distance ? { shuttle, distance: shuttleDistance } : closest;
+    }, null)?.shuttle;
 }
 
-function updateETAUI(etas) {
-    const etaContainer = document.getElementById('eta-container');
-    const sortedEtas = Object.entries(etas).sort((a, b) => a[1] - b[1]);
-
-    etaContainer.innerHTML = sortedEtas.map(([driverId, eta]) =>
-        `Driver ${driverId}: ETA ${eta} minutes`
-    ).join('<br>');
-
-    const activeDriversCount = sortedEtas.filter(([, eta]) => eta !== "Not available").length;
-    document.getElementById('shuttles-active').textContent = `Shuttles active: ${activeDriversCount}`;
+function calculateETA(distance) {
+    const speedInKmPerHour = 30;  // Average speed
+    const timeInHours = distance / speedInKmPerHour;
+    const timeInMinutes = timeInHours * 60 + 1;  // Adding one minute to all calculations
+    return `${timeInMinutes.toFixed(2)} minutes`;
 }
 
-function calculateSpeed(driverId, driverLocations) {
-
-    const driverUpdates = driverLocations[driverId];
-    if (driverUpdates && driverUpdates.length >= 2) {
-
-        driverUpdates.sort((a, b) => b.timestamp - a.timestamp);
-
-        const latestUpdate = driverUpdates[0];
-        const previousUpdate = driverUpdates[1];
-
-        const FIVE_MINUTES = 5 * 60 * 1000;
-        const now = Date.now();
-        if (now - latestUpdate.timestamp > FIVE_MINUTES) {
-
-            return { speed: 0, isActive: false };
-        }
-
-        const distance = haversineDistance(latestUpdate.location, previousUpdate.location);
-        const timeDifference = (latestUpdate.timestamp - previousUpdate.timestamp) / (1000 * 60 * 60);
-
-        const speed = distance / timeDifference;
-        return { speed: speed, isActive: true };
-    } else {
-
-        return { speed: 0, isActive: false };
-    }
+function updateETAUI(eta) {
+    const etaContainer = document.getElementById('eta-time');
+    etaContainer.textContent = `ETA: ${eta}`;
 }
 
 function haversineDistance(coords1, coords2) {
-    function toRad(x) {
-        return x * Math.PI / 180;
-    }
+    function toRad(x) { return x * Math.PI / 180; }
+    const R = 6371; // Earth radius in kilometers
+    const dLat = toRad(coords2.latitude - coords1.latitude);
+    const dLon = toRad(coords2.longitude - coords1.longitude);
+    const lat1 = toRad(coords1.latitude);
+    const lat2 = toRad(coords2.latitude);
 
-    var R = 6371; 
-    var dLat = toRad(coords2.latitude - coords1.latitude);
-    var dLon = toRad(coords2.longitude - coords1.longitude);
-    var lat1 = toRad(coords1.latitude);
-    var lat2 = toRad(coords2.latitude);
-
-    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    var d = R * c;
-
-    return d; 
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+    return distance;
 }
 
 document.addEventListener('DOMContentLoaded', promptForStudentLocation);

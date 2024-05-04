@@ -1,25 +1,8 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyCe23F3CFtz-lbBFxXdjfv-z5oE9PhlyzE",
-    authDomain: "shuttle-web-538fa.firebaseapp.com",
-    databaseURL: "https://shuttle-web-538fa-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "shuttle-web-538fa",
-    storageBucket: "shuttle-web-538fa.appspot.com",
-    messagingSenderId: "189496484474",
-    appId: "1:189496484474:web:d8929149d890cf573ad1c3",
-    measurementId: "G-M20NXLPBD3"
-};
-
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
-
 let map;
 let markers = {};
 
 var shuttleIcon = L.icon({
-    iconUrl: '/assets/shuttle-icon.png', 
+    iconUrl: '/assets/shuttle-icon.png',
     iconSize: [38, 38],
     iconAnchor: [16, 16],
     popupAnchor: [0, -16]
@@ -27,25 +10,25 @@ var shuttleIcon = L.icon({
 
 function fetchDriverLocations() {
     console.log('Fetching driver locations...');
-    const locationRef = ref(database, 'driverLocations');
-
-    onValue(locationRef, (snapshot) => {
-        const locations = snapshot.val();
-        console.log('Received locations:', locations);
-        if (!locations) {
-            console.log("No locations found in database.");
-            return;
-        }
-        Object.keys(locations).forEach(driverId => {
-            const location = locations[driverId];
-            console.log(`Updating location for driver: ${driverId}`);
-            if (location && location.latitude && location.longitude) {
-                updateMap(driverId, location.latitude, location.longitude);
+    fetch('/updated-locations')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                console.log('Received locations:', data.data);
+                data.data.forEach(location => {
+                    if (location && location.latitude && location.longitude) {
+                        updateMap(location.driverId, location.latitude, location.longitude);
+                    } else {
+                        console.error(`Invalid or no location data available for driver ID: ${location.driverId}`);
+                    }
+                });
             } else {
-                console.error(`Invalid or no location data available for ${driverId}.`);
+                console.log("No locations found or error in response.");
             }
+        })
+        .catch(error => {
+            console.error('Failed to fetch driver locations:', error);
         });
-    });
 }
 
 function updateMap(driverId, latitude, longitude) {
@@ -66,6 +49,7 @@ function initMap() {
     }).addTo(map);
 
     fetchDriverLocations();
+    setInterval(fetchDriverLocations, 5000);  // Fetch location updates every 5 seconds
 }
 
 document.addEventListener('DOMContentLoaded', () => {
